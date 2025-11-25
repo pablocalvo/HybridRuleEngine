@@ -1,0 +1,63 @@
+@startuml
+
+title HybridRuleEngine - High level architecture
+
+class RuleEngine {
+  +loadFromJson(path)
+  +evaluate(ruleId, context) : EvaluationResult
+}
+
+class RuleStore {
+  +load(rules)
+  +getRule(id) : Rule
+  +getVersion() : uint64_t
+}
+
+class RuleEvaluator {
+  +evaluate(rule, context) : EvaluationResult
+}
+
+class Rule {
+  -id : string
+  -priority : int
+  -conditions : ConditionTree
+  -actions : list<Action>
+}
+
+class ConditionTree {
+  -operator : LogicOp
+  -children : list<ConditionTree>
+  -predicate : Predicate
+}
+
+class Predicate {
+  -field : string
+  -op : ComparisonOp
+  -value : Any
+}
+
+class Action {
+  -type : ActionType
+  -params : map<string, Any>
+}
+
+class Context {
+  +set(key, value)
+  +get<T>(key) : T
+  -values : map<string, Any>
+}
+
+class PythonAdapter {
+  +call(functionName, args) : Any
+}
+
+RuleEngine -> RuleStore : uses
+RuleEngine -> RuleEvaluator : delegates evaluation
+RuleEvaluator --> Rule
+RuleEvaluator --> Context
+Rule --> ConditionTree
+Rule --> Action
+ConditionTree --> Predicate
+Action ..> PythonAdapter : "optional\n(for python actions)"
+
+@enduml

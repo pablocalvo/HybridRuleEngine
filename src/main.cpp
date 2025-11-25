@@ -4,10 +4,12 @@
 #include "contexto.h"
 #include "regla.h"
 #include "reglaengine.h"
+#include "logger.h"
 
 void procesarContexto(Contexto ctx, const std::string& pythonExec) {
-    std::cout << "[" << ctx.nombre() << "] Enviando datos al motor Python..." << std::endl;
+    Logger::instance().log(ctx.nombre(), "→ Enviando datos al motor Python");
     auto regla = ReglaEngine::obtenerRegla(ctx, pythonExec);
+    Logger::instance().log(ctx.nombre(), "← Regla aplicada: " + regla.nombre());
     std::cout << "[" << ctx.nombre() << "] Regla aplicada: " << regla.nombre() << std::endl;
 }
 
@@ -33,6 +35,8 @@ int main() {
     }
 
     for (auto& h : hilos) h.join();
-    std::cout << "\n✅ Procesamiento completo con move semantics.\n";
+
+    Logger::instance().log("SYSTEM", "✅ Procesamiento completo con move semantics y logging concurrente.");
+    std::cout << "\n✅ Procesamiento completo con move semantics y logging concurrente.\n";
     return 0;
 }

@@ -1,0 +1,49 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "engine": "HybridRuleEngine",
+    "created_by": "Pablo Calvo",
+    "description": "Minimal example rule set"
+  },
+  "rules": [
+    {
+      "id": "LoanEligibility",
+      "description": "Basic eligibility based on age and income",
+      "priority": 10,
+
+      "conditions": {
+        "all": [
+          { "field": "age", "op": ">=", "value": 18 },
+          { "field": "monthly_income", "op": ">=", "value": 1200.0 }
+        ]
+      },
+
+      "actions": [
+        { "type": "set", "field": "eligible", "value": true },
+        { "type": "set", "field": "approved_amount", "value": 8000.0 }
+      ]
+    },
+
+    {
+      "id": "VipDiscount",
+      "description": "VIP customers receive an additional discount",
+      "priority": 5,
+
+      "conditions": {
+        "any": [
+          { "field": "segment", "op": "==", "value": "VIP" },
+          { "field": "total_amount", "op": ">=", "value": 1000.0 }
+        ]
+      },
+
+      "actions": [
+        {
+          "type": "python",
+          "function": "compute_discount",
+          "args": ["total_amount"],
+          "target_field": "discount"
+        }
+      ]
+    }
+  ]
+}
